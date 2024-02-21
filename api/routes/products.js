@@ -22,28 +22,51 @@ router.post("/", async (req, res) => {
 	}
 });
 
-// router.get("/:productId", (req, res, next) => {
-// 	const id = req.params.productId;
-// 	if (id === "special") {
-// 		res.status(200).json({
-// 			message: "Handling GET Request for one product",
-// 			id: id,
-// 		});
-// 	} else {
-// 		res.status(200).json({
-// 			message: "You passed and ID",
-// 		});
-// 	}
-// });
-// router.patch("/:productId", (req, res, next) => {
-// 	res.status(200).json({
-// 		message: "Updated product",
-// 	});
-// });
-// router.delete("/:productId", (req, res, next) => {
-// 	res.status(200).json({
-// 		message: "Deleted product",
-// 	});
-// });
+// Get a Product
+
+router.get("/:id", async (req, res) => {
+	try {
+		const { id } = req.params;
+		const product = await Product.findById(id);
+		res.status(200).json(product);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+// Update a Product
+
+router.put("/:id", async (req, res) => {
+	try {
+		const { id } = req.params;
+		const product = await Product.findByIdAndUpdate(id, req.body);
+		if (!product) {
+			return res
+				.status(404)
+				.json({ message: `cannot find any product with id ${id}` });
+		}
+		const updatedProduct = await Product.findById(id);
+		res.status(200).json(updatedProduct);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
+
+// Delete a Product
+
+router.delete("/:id", async (req, res) => {
+	try {
+		const { id } = req.params;
+		const product = await Product.findByIdAndDelete(id);
+		if (!product) {
+			return res
+				.status(404)
+				.json({ message: `cannot find any product with id ${id}` });
+		}
+		res.status(200).json(product);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+});
 
 module.exports = router;
